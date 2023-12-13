@@ -1,0 +1,6 @@
+@MadiatrProject_HostAddress = http://localhost:5204
+
+GET {{MadiatrProject_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
