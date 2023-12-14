@@ -1,15 +1,38 @@
 
-using MadiatrProject.DbContext;
+using FluentValidation;
+using MadiatrProject.Command;
+using MadiatrProject.DbContexts;
+using MadiatrProject.Model;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
+using System.Configuration;
+using System.Data;
+using System.Data.SqlClient;
+
 
 var builder = WebApplication.CreateBuilder(args);
+Microsoft.Extensions.Configuration.ConfigurationManager configuration = builder.Configuration;
 
-// Add services to the container.
-builder.Services.AddTransient<MDBContext>();
+
+builder.Services.AddDbContext<MDBContext>(opt=>opt.UseSqlServer(configuration.GetConnectionString("defaultconnections")));
 builder.Services.AddControllers();
-// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
+builder.Services.AddMediatR(cfg => cfg.RegisterServicesFromAssembly(typeof(Program).Assembly));
+builder.Services.AddValidatorsFromAssembly(typeof(Program).Assembly);
+builder.Services.AddValidatorsFromAssemblyContaining<StudentValidator>();
+builder.Services.AddSingleton<IValidator<Students>, StudentValidator>();
+
+
+builder.Services.AddScoped<IDbConnection>(c =>
+{
+    var dbContext = c.GetRequiredService<MDBContext>();
+    return dbContext.GetSqlConnection();
+});
+
+
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
-builder.Services.AddMediatR(cfg=>cfg.RegisterServicesFromAssembly(typeof(Program).Assembly));
+
+
 
 var app = builder.Build();
 
