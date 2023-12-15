@@ -10,7 +10,7 @@ using Microsoft.AspNetCore.Http.HttpResults;
 
 namespace MadiatrProject.Command;
 
-public class StudetnInsertCommand:IRequest<int>
+public class StudetnIntCommand:IRequest<int>
 {
     public int StudentId { get; set; }
     public string? StudentName { get; set; }
@@ -19,22 +19,21 @@ public class StudetnInsertCommand:IRequest<int>
     public string? MotherName { get; set; }
     public int RollNo { get; set; }
 
-    private class StudetnInsertCommandHandler : IRequestHandler<StudetnInsertCommand, int>
+    private class StudetnInsertCommandHandler : IRequestHandler<StudetnIntCommand, int>
     {
-        private readonly IDbConnection _dbConnection;
+
         private readonly MDBContext _cotext;
-        private readonly StudentValidator _validations;
-        public StudetnInsertCommandHandler(MDBContext context, IDbConnection dbConnection, StudentValidator validations)
+       
+        public StudetnInsertCommandHandler(MDBContext context)
         {
             _cotext = context;
-            _dbConnection = dbConnection;
-            _validations = validations; 
+            
         }
 
 
-        public async Task<int> Handle(StudetnInsertCommand request, CancellationToken cancellationToken)
+        public async Task<int> Handle(StudetnIntCommand request, CancellationToken cancellationToken)
         {
-            
+            var connection = _cotext.GetSqlConnection();
 
             var query = "Insert into Students (StudentName,StudentEmail,FatherName,MotherName,RollNo) Values(@StudentName,@StudentEmail,@FatherName,@MotherName,@RollNo)";
             var parameters = new DynamicParameters();
@@ -45,14 +44,14 @@ public class StudetnInsertCommand:IRequest<int>
             parameters.Add("MotherName", request.MotherName);
             parameters.Add("RollNo", request.RollNo);
 
-            var studentInsert =await _dbConnection.ExecuteAsync(query, parameters);
+            var studentInsert =await connection.ExecuteAsync(query, parameters);
             return studentInsert;
             
         }
     }
 }
 
-public class StudentValidator:AbstractValidator<Students>
+public class StudentValidator:AbstractValidator<StudetnIntCommand>
 {
     public StudentValidator()
     {
@@ -66,7 +65,7 @@ public class StudentValidator:AbstractValidator<Students>
         RuleFor(a => a.FatherName)
             .MaximumLength(10);
         RuleFor(a => a.MotherName)
-            .Null()
+            .NotEmpty()
             .MaximumLength(10)
             .MinimumLength(3);
         RuleFor(a => a.RollNo)

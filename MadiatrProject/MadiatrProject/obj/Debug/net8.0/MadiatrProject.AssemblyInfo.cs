@@ -14,7 +14,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("MadiatrProject")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+21a56f39c80ee31babd7d6a929cd89be3ab70ebf")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+3b7a463be036adadc416456f7aed81c425fd9e36")]
 [assembly: System.Reflection.AssemblyProductAttribute("MadiatrProject")]
 [assembly: System.Reflection.AssemblyTitleAttribute("MadiatrProject")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

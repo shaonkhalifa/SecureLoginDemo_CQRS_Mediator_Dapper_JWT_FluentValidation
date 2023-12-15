@@ -1,4 +1,5 @@
-﻿using MadiatrProject.Command;
+﻿using FluentValidation;
+using MadiatrProject.Command;
 using MadiatrProject.Model;
 using MadiatrProject.Queries;
 using MediatR;
@@ -12,10 +13,12 @@ namespace MadiatrProject.Controllers
     public class StudentsController : ControllerBase
     {
         private readonly IMediator _madiator;
+        private readonly IValidator<StudetnIntCommand> _validator;
 
-        public StudentsController(IMediator mediator)
+        public StudentsController(IMediator mediator, IValidator<StudetnIntCommand> validator)
         {
                 _madiator = mediator;
+                _validator = validator;
         }
         [HttpGet]
         public  async Task<IActionResult> GetAllStudents()
@@ -27,17 +30,20 @@ namespace MadiatrProject.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> StudetnInsert(StudetnInsertCommand command)
+        public async Task<IActionResult> StudetnInsert(StudetnIntCommand command)
         {
-            var student = new Students();
-            var validator = new StudentValidator();
-            var validationResult = validator.Validate(student);
+            var validationResult = await _validator.ValidateAsync(command);
 
             if (!validationResult.IsValid)
             {
+                foreach (var error in validationResult.Errors)
+                {
+                    Console.WriteLine($"Property: {error.PropertyName}, Error: {error.ErrorMessage}");
+                }
 
                 return BadRequest(validationResult.Errors);
             }
+
             var result = await _madiator.Send(command);
             return Ok(result);
 

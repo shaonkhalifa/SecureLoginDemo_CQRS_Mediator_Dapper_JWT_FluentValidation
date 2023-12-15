@@ -16,39 +16,24 @@ namespace MadiatrProject.Queries
         {
             private readonly MDBContext _dbContext;
            
-            private readonly IDbConnection _dbConnection;
+           
 
 
-            public GetAllStudentsQueryHandler(MDBContext dbContext, IDbConnection dbConnection)
+            public GetAllStudentsQueryHandler(MDBContext dbContext)
             {
-                _dbContext = dbContext;
-                _dbConnection = dbConnection;
-                
+                _dbContext = dbContext;   
             }
             public async Task<List<StudentsDto>> Handle(GetAllStudentsQuery request, CancellationToken cancellationToken)
             {
+                var connection = _dbContext.GetSqlConnection();
+
+                //var studentsDto = await _dbConnection.QueryAsync<StudentsDto>("SELECT * FROM Students");
+                //return studentsDto.ToList();
+                var data = "SELECT * FROM Students";
+                var query = await connection.QueryAsync<StudentsDto>(data);
+                return query.ToList();
                
 
-                var studentsDto = await _dbConnection.QueryAsync<StudentsDto>("SELECT * FROM Students");
-                return studentsDto.ToList();
-
-                //try
-                //{
-                //    // Dapper query
-                //    var studentsDto = await _dbConnection.QueryAsync<StudentsDto>("SELECT * FROM Students");
-                //    return studentsDto.ToList();
-                //}
-                //catch (Exception ex)
-                //{
-                //    // Handle exceptions (log, throw, etc.)
-                //    Console.WriteLine($"Error executing Dapper query: {ex.Message}");
-                //    throw;
-                //}
-                //finally
-                //{
-                //    // Ensure the Dapper connection is explicitly closed
-                //   _dbConnection.Close();
-                //}
 
 
             }
