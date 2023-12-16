@@ -35,7 +35,9 @@ builder.Services.AddSingleton<AppSettings>();
 //       {
 //           option.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Serialize;
 //           option.SerializerSettings.PreserveReferencesHandling = Newtonsoft.Json.PreserveReferencesHandling.Objects;
-//       });
+////       });
+
+
 var appSettingsSection = configuration.GetSection("AppSettings");
 
 //jwt

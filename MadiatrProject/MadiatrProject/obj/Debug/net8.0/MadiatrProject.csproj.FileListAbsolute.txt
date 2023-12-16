@@ -261,3 +261,4 @@ C:\Users\mdsha\OneDrive\Desktop\Project\SecureLoginDemo_CQRS_Mediator_Dapper_JWT
 C:\Users\mdsha\OneDrive\Desktop\Project\SecureLoginDemo_CQRS_Mediator_Dapper_JWT_FluentValidation\MadiatrProject\MadiatrProject\bin\Debug\net8.0\FluentValidation.DependencyInjectionExtensions.dll
 C:\Users\mdsha\OneDrive\Desktop\Project\SecureLoginDemo_CQRS_Mediator_Dapper_JWT_FluentValidation\MadiatrProject\MadiatrProject\bin\Debug\net8.0\Microsoft.AspNetCore.Authentication.JwtBearer.dll
 C:\Users\mdsha\OneDrive\Desktop\Project\SecureLoginDemo_CQRS_Mediator_Dapper_JWT_FluentValidation\MadiatrProject\MadiatrProject\bin\Debug\net8.0\Newtonsoft.Json.dll
+C:\Users\mdsha\OneDrive\Desktop\Project\SecureLoginDemo_CQRS_Mediator_Dapper_JWT_FluentValidation\MadiatrProject\MadiatrProject\bin\Debug\net8.0\BCrypt.Net-Next.dll

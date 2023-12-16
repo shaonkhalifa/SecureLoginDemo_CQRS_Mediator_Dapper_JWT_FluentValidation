@@ -13,7 +13,7 @@ namespace MadiatrProject.DbContexts
                 
         }
         public DbSet<Students> Students { get; set; }
-        
+        public DbSet<User> User { get; set; }
         public IDbConnection GetSqlConnection()=>(IDbConnection)Database.GetDbConnection();
         //public IDbConnection GetSqlConnection()
         //{

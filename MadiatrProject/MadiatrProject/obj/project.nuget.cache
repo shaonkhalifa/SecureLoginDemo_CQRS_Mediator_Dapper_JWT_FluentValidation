@@ -1,11 +1,12 @@
 {
   "version": 2,
-  "dgSpecHash": "PC0LmJQ+zmAcoGbStoCimisszQMeXHC206LG48RB3l6sQn1wtx66x++HWFSo/JKQ3+ljZZxH0Tf0qFTsCaxuLQ==",
+  "dgSpecHash": "LLZ/1IAi1D1/gzQrQD8pjgjvwM1iZuJ9r5mrP+WVh924mRT4kXXuiqsX77N5YRSWolyxuq7niLZN/3fI1433Og==",
   "success": true,
   "projectFilePath": "C:\\Users\\mdsha\\OneDrive\\Desktop\\Project\\SecureLoginDemo_CQRS_Mediator_Dapper_JWT_FluentValidation\\MadiatrProject\\MadiatrProject\\MadiatrProject.csproj",
   "expectedPackageFiles": [
     "C:\\Users\\mdsha\\.nuget\\packages\\azure.core\\1.25.0\\azure.core.1.25.0.nupkg.sha512",
     "C:\\Users\\mdsha\\.nuget\\packages\\azure.identity\\1.7.0\\azure.identity.1.7.0.nupkg.sha512",
+    "C:\\Users\\mdsha\\.nuget\\packages\\bcrypt.net-next\\4.0.3\\bcrypt.net-next.4.0.3.nupkg.sha512",
     "C:\\Users\\mdsha\\.nuget\\packages\\dapper\\2.1.24\\dapper.2.1.24.nupkg.sha512",
     "C:\\Users\\mdsha\\.nuget\\packages\\fluentvalidation\\11.5.1\\fluentvalidation.11.5.1.nupkg.sha512",
     "C:\\Users\\mdsha\\.nuget\\packages\\fluentvalidation.aspnetcore\\11.3.0\\fluentvalidation.aspnetcore.11.3.0.nupkg.sha512",
