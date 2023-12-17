@@ -1,9 +1,11 @@
 
 using FluentValidation;
 using FluentValidation.AspNetCore;
+using MadiatrProject.Attributes;
 using MadiatrProject.Command;
 using MadiatrProject.DbContexts;
 using MadiatrProject.Model;
+using MadiatrProject.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
@@ -20,10 +22,13 @@ Microsoft.Extensions.Configuration.ConfigurationManager configuration = builder.
 
 builder.Services.AddDbContext<MDBContext>(opt=>opt.UseSqlServer(configuration.GetConnectionString("defaultconnections")));
 builder.Services.AddControllers();
+
 builder.Services.AddMediatR(cfg => cfg.RegisterServicesFromAssembly(typeof(Program).Assembly));
 builder.Services.AddValidatorsFromAssembly(typeof(Program).Assembly);
 builder.Services.Configure<AppSettings>(builder.Configuration.GetSection("AppSettings"));
-builder.Services.AddSingleton<AppSettings>();
+builder.Services.AddScoped<AppSettings>();
+builder.Services.AddScoped<AuthorizeAttribute>();
+builder.Services.AddScoped<UserAuthenticationService>();
 
 //builder.Services.AddScoped<IDbConnection>(c =>
 //{

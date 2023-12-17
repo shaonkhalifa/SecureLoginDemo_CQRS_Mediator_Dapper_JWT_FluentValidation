@@ -1,7 +1,9 @@
 ﻿using MadiatrProject.DbContexts;
 using MadiatrProject.Model;
 using MadiatrProject.Queries;
+using MadiatrProject.Services;
 using MediatR;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
@@ -22,34 +24,56 @@ public class UserSignInCommand : IRequest<string>
         private readonly IMediator _mediator;
         private readonly AppSettings _appSettings;
         private readonly IConfiguration _configuration;
+        private readonly UserAuthenticationService _userAuthService;
 
-        public UserSignInCommandHandler(MDBContext dbcontext, IMediator mediator, IOptions<AppSettings> appSettings, IConfiguration configuration)
+        public UserSignInCommandHandler(MDBContext dbcontext, IMediator mediator, IOptions<AppSettings> appSettings, IConfiguration configuration, UserAuthenticationService userAuthService)
         {
             _dbcontext = dbcontext;
             _mediator = mediator;
             _appSettings = appSettings.Value;
             _configuration = configuration;
+            _userAuthService = userAuthService;
         }
         public async Task<string> Handle(UserSignInCommand request, CancellationToken cancellationToken)
         {
-            var authenticUserQuery = new AuthenticUserQuery
-            {
-                UserName = request.UserName,
-                Password = request.Password
-            };
-            var credential = await _mediator.Send(authenticUserQuery);
-
+            //var authenticUserQuery = new AuthenticUserQuery
+            //{
+            //    UserName = request.UserName,
+            //    Password = request.Password
+            //};
+            // var credential = await _mediator.Send(authenticUserQuery);
+            var credential = await _userAuthService.VerifyUser(request.UserName, request.Password);
             if (credential != null)
             {
                 var token = GenerateToken(credential, _appSettings.key);
                 credential.Token = token;
                 credential.Password = "";
+                //var validToken = ValidateToken(token);
+                //if (validToken == null)
+                //{
+                //    throw new UnauthorizedAccessException("Invalid User");
+                //}
                 return token;
             }
 
-            
+
             throw new UnauthorizedAccessException("Invalid User");
 
+        }
+
+        public string GetRolesForUser(int userId)
+        {
+
+            var role = _dbcontext.RoleAssain
+       .Where(ra => ra.UserId == userId)
+       .Join(
+           _dbcontext.Role,
+           ra => ra.RoleId,
+           role => role.RoleId,
+           (ra, role) => role.RoleName
+       )
+       .FirstOrDefault();
+            return role;
         }
         private string GenerateToken(User user, string secret)
         {
@@ -60,14 +84,25 @@ public class UserSignInCommand : IRequest<string>
             }
 
             var authSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(secretKey));
-            
 
+            var roles = GetRolesForUser(user.UserId);
+
+    //        var claims = new List<Claim>
+    //{
+    //    new Claim(ClaimTypes.Name, user.UserName),
+    //};
+
+    //        foreach (var role in roles)
+    //        {
+    //            claims.Add(new Claim(ClaimTypes.Role, role));
+    //        }
             var tokenDescriptor = new SecurityTokenDescriptor
             {
                 Subject = new ClaimsIdentity(new[]
                 {
             new Claim(ClaimTypes.Name, user.UserId.ToString()),
-            
+            new Claim(ClaimTypes.Role,roles.ToString())
+
         }),
                 Expires = DateTime.UtcNow.AddHours(24),
                 SigningCredentials = new SigningCredentials(authSigningKey, SecurityAlgorithms.HmacSha256)
@@ -79,43 +114,10 @@ public class UserSignInCommand : IRequest<string>
             return tokenHandler.WriteToken(token);
 
         }
-        public int? ValidateToken(string token)
-        {
-            if (token == null)
-            {
-                return null;
-            }
 
-            var tokenHandler = new JwtSecurityTokenHandler();
-            var validationParameters = new TokenValidationParameters
-            {
-                ValidateIssuerSigningKey = true,
-                IssuerSigningKey = new SymmetricSecurityKey(Encoding.ASCII.GetBytes(_appSettings.key)),
-                ValidateIssuer = false,
-                ValidateAudience = false,
-                ClockSkew = TimeSpan.Zero
-            };
-
-            try
-            {
-                var claimsPrincipal = tokenHandler.ValidateToken(token, validationParameters, out _);
-                var userIdClaim = claimsPrincipal.FindFirst(ClaimTypes.Name);
-
-                if (userIdClaim != null && int.TryParse(userIdClaim.Value, out int userId))
-                {
-                    return userId;
-                }
-            }
-            catch
-            {
-                // Ignore validation errors and return null
-            }
-
-            return null;
-        }
     }
-    
-   
+
+
 }
 public class UserCredintial
 {

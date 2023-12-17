@@ -6,15 +6,17 @@ using Microsoft.EntityFrameworkCore.Storage;
 
 namespace MadiatrProject.DbContexts
 {
-    public class MDBContext: DbContext
+    public class MDBContext : DbContext
     {
-        public MDBContext(DbContextOptions<MDBContext> options):base(options) 
+        public MDBContext(DbContextOptions<MDBContext> options) : base(options)
         {
-                
+
         }
         public DbSet<Students> Students { get; set; }
         public DbSet<User> User { get; set; }
-        public IDbConnection GetSqlConnection()=>(IDbConnection)Database.GetDbConnection();
+        public DbSet<Role> Role { get; set; }
+        public DbSet<RoleAssain> RoleAssain { get; set; }
+        public IDbConnection GetSqlConnection() => (IDbConnection)Database.GetDbConnection();
         //public IDbConnection GetSqlConnection()
         //{
         //    var dbConnection = Database.GetDbConnection();

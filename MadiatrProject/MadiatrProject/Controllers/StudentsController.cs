@@ -1,17 +1,18 @@
 ﻿using FluentValidation;
+using MadiatrProject.Attributes;
 using MadiatrProject.Command;
 using MadiatrProject.Model;
 using MadiatrProject.Queries;
 using MediatR;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using System.Data;
 
 namespace MadiatrProject.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    [Authorize]
+    [Authorize()]
     public class StudentsController : ControllerBase
     {
         private readonly IMediator _madiator;
