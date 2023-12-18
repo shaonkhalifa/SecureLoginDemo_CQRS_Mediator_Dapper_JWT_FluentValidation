@@ -12,7 +12,7 @@ namespace MadiatrProject.Command
         public string RoleName { get; set; }
         public int PermissionAssignId { get; set; }
         public int RoleId { get; set; }
-        public int PermissionId { get; set; }
+        public List<int> PermissionIds { get; set; }
         private class RolePermissionSetupCommandHandler : IRequestHandler<RolePermissionSetupCommand, int>
         {
             private readonly MDBContext _dbContext;
@@ -30,12 +30,15 @@ namespace MadiatrProject.Command
                 int insertedRoleId = await InsertRole(request.RoleName);
 
 
-                var permissionAssain = new PermissionAssign
-                {
-                    RoleId = insertedRoleId,
-                    PermissionId = request.PermissionId
-                };
-                _dbContext.PermissionAssign.Add(permissionAssain);
+                var permissionAssignments = request.PermissionIds
+                         .Select(permissionId => new PermissionAssign
+                         {
+                             RoleId = insertedRoleId,
+                             PermissionId = permissionId
+                         })
+                         .ToList();
+
+                _dbContext.PermissionAssign.AddRange(permissionAssignments);
                 await _dbContext.SaveChangesAsync();
 
 

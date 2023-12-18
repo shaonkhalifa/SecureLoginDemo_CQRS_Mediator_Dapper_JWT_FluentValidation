@@ -1,4 +1,5 @@
 ﻿using MadiatrProject.DbContexts;
+using MadiatrProject.Model;
 using MadiatrProject.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -11,14 +12,14 @@ namespace MadiatrProject.Attributes;
 [AttributeUsage(AttributeTargets.Class | AttributeTargets.Method, AllowMultiple = true, Inherited = true)]
 public class AuthorizeAttribute : Attribute, IAuthorizationFilter
 {
-    //private string Role { get; }
+    private readonly string[] _requiredPermissions;
     //public AuthorizeAttribute(string roles)
     //{
     //    Role = roles;
     //}
-    public AuthorizeAttribute()
+    public AuthorizeAttribute(string permission)
     {
-        
+        _requiredPermissions = permission.Split(','); ;
     }
     private readonly MDBContext _dbContext;
     public AuthorizeAttribute(MDBContext dbContext)
@@ -54,14 +55,19 @@ public class AuthorizeAttribute : Attribute, IAuthorizationFilter
   
        var permissionRoles = userService.findUser(userID);
     
-        bool hasPermission = permissionRoles.Any(role => roles.Contains(role.ToString()));
+        bool hasPermission = permissionRoles.RoleName.Any(role => roles.Contains(role.ToString()));
 
         if (!hasPermission)
         {
             context.Result = new ForbidResult();
             return;
         }
-
+        var Per = userService.HasAnyPermission(permissionRoles.RoleId,_requiredPermissions);
+        if (!Per)
+        {
+            context.Result = new ForbidResult("You Don Have Permission");
+            return;
+        }
 
         Claim claim = new Claim(ClaimTypes.Name, userID.ToString() ?? "0");
         ClaimsIdentity? identity = new ClaimsIdentity(new[] { claim }, "BasicAuthentication");

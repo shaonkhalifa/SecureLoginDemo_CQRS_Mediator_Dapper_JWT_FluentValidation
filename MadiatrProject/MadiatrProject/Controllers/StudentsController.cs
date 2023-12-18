@@ -8,73 +8,72 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System.Data;
 
-namespace MadiatrProject.Controllers
+namespace MadiatrProject.Controllers;
+
+[Route("api/[controller]")]
+[ApiController]
+[Authorize(permission: "StudentGet")]
+public class StudentsController : ControllerBase
 {
-    [Route("api/[controller]")]
-    [ApiController]
-    [Authorize()]
-    public class StudentsController : ControllerBase
+    private readonly IMediator _madiator;
+    private readonly IValidator<StudetnIntCommand> _validator;
+    private readonly IValidator<StudentUpdateCommand> _uvalidator;
+
+
+    public StudentsController(IMediator mediator, IValidator<StudetnIntCommand> validator, IValidator<StudentUpdateCommand> uvalidator)
     {
-        private readonly IMediator _madiator;
-        private readonly IValidator<StudetnIntCommand> _validator;
-        private readonly IValidator<StudentUpdateCommand> _uvalidator;
-  
+            _madiator = mediator;
+            _validator = validator;
+            _uvalidator = uvalidator;
+    }
+    [HttpGet]
+    public  async Task<IActionResult> GetAllStudents()
+    {
+        
+        var query = new GetAllStudentsQuery();
+        var result =  await _madiator.Send(query); 
+        return Ok(result);
+    }
 
-        public StudentsController(IMediator mediator, IValidator<StudetnIntCommand> validator, IValidator<StudentUpdateCommand> uvalidator)
-        {
-                _madiator = mediator;
-                _validator = validator;
-                _uvalidator = uvalidator;
-        }
-        [HttpGet]
-        public  async Task<IActionResult> GetAllStudents()
-        {
-            
-            var query = new GetAllStudentsQuery();
-            var result =  await _madiator.Send(query); 
-            return Ok(result);
-        }
+    [HttpPost]
+    public async Task<IActionResult> StudetnInsert(StudetnIntCommand command)
+    {
+        var validationResult = await _validator.ValidateAsync(command);
 
-        [HttpPost]
-        public async Task<IActionResult> StudetnInsert(StudetnIntCommand command)
+        if (!validationResult.IsValid)
         {
-            var validationResult = await _validator.ValidateAsync(command);
-
-            if (!validationResult.IsValid)
+            foreach (var error in validationResult.Errors)
             {
-                foreach (var error in validationResult.Errors)
-                {
-                    Console.WriteLine($"Property: {error.PropertyName}, Error: {error.ErrorMessage}");
-                }
-
-                return BadRequest(validationResult.Errors);
+                Console.WriteLine($"Property: {error.PropertyName}, Error: {error.ErrorMessage}");
             }
 
-            var result = await _madiator.Send(command);
-            return Ok(result);
-
+            return BadRequest(validationResult.Errors);
         }
 
-        [HttpPut]
-        public async Task<IActionResult> StudetnUpdate(StudentUpdateCommand command)
-        {
-            var validationResult = await _uvalidator.ValidateAsync(command);
-
-            if (!validationResult.IsValid)
-            {
-                foreach (var error in validationResult.Errors)
-                {
-                    Console.WriteLine($"Property: {error.PropertyName}, Error: {error.ErrorMessage}");
-                }
-
-                return BadRequest(validationResult.Errors);
-            }
-
-            var result = await _madiator.Send(command);
-            return Ok(result);
-
-        }
-
+        var result = await _madiator.Send(command);
+        return Ok(result);
 
     }
+
+    [HttpPut]
+    public async Task<IActionResult> StudetnUpdate(StudentUpdateCommand command)
+    {
+        var validationResult = await _uvalidator.ValidateAsync(command);
+
+        if (!validationResult.IsValid)
+        {
+            foreach (var error in validationResult.Errors)
+            {
+                Console.WriteLine($"Property: {error.PropertyName}, Error: {error.ErrorMessage}");
+            }
+
+            return BadRequest(validationResult.Errors);
+        }
+
+        var result = await _madiator.Send(command);
+        return Ok(result);
+
+    }
+
+
 }

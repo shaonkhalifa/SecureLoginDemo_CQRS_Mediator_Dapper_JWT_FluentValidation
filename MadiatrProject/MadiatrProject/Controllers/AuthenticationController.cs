@@ -56,5 +56,14 @@ namespace MadiatrProject.Controllers
             return Ok(result);
 
         }
+
+        [HttpPost("PermissionAssign")]
+        public async Task<IActionResult> PermissionAssign(RolePermissionSetupCommand command)
+        {
+         
+            var result = await _madiator.Send(command);
+            return Ok(result);
+
+        }
     }
 }

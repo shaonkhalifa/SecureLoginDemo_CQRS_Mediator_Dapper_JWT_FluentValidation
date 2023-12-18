@@ -7,6 +7,7 @@ using MediatR;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
+using System.Linq;
 using System.Security.Claims;
 using System.Text;
 
@@ -77,34 +78,71 @@ public class UserAuthenticationService
 
         return null;
     }
-    public List<string> ? findUser(int? UserId)
+    public RoleDto  findUser(int? UserId)
     {
         if (UserId == 0)
         {
             return null;
         }
 
-        List<int> PermissionRoleID = _dbContext.RoleAssain
+        int PermissionRoleID = _dbContext.RoleAssain
             .Where(a => a.UserId == UserId)
             .Select(a => a.RoleId)
-            .ToList();
+            .FirstOrDefault();
+        
 
-
-        List<string> permissionRoles = new List<string>();
-
-        foreach (var item in PermissionRoleID)
-        {
-            var permissionRole = _dbContext.Role
-                .Where(a => a.RoleId == item)
-                .Select(a => a.RoleName)
+        var permissionRole = _dbContext.Role
+                .Where(a => a.RoleId == PermissionRoleID)
+                .Select(a=> new RoleDto
+                {
+                    RoleId=a.RoleId,
+                    RoleName=a.RoleName
+                })
                 .FirstOrDefault();
 
-            if (permissionRole != null)
-            {
-                permissionRoles.Add(permissionRole);
-            }
-        }
+        //List<int> PermissionRoleID = _dbContext.RoleAssain
+        //    .Where(a => a.UserId == UserId)
+        //    .Select(a => a.RoleId)
+        //    .ToList();
 
-      return permissionRoles;
+        //List<string> permissionRoles = new List<string>();
+
+        //foreach (var item in PermissionRoleID)
+        //{
+        //    var permissionRole = _dbContext.Role
+        //        .Where(a => a.RoleId == item)
+        //        .Select(a => a.RoleName)
+        //        .FirstOrDefault();
+
+        //    if (permissionRole != null)
+        //    {
+        //        permissionRoles.Add(permissionRole);
+        //    }
+        //}
+
+        return permissionRole;
     }
+
+    //public List<int> RolePermissionList(int? RoleId)
+    //{
+
+    //}
+   public bool HasAnyPermission(int roleId, IEnumerable<string> permissionNames)
+    {
+        var permissionNamesList = _dbContext.PermissionAssign
+                     .Where(a => a.RoleId == roleId)
+       .Join(_dbContext.Permission,
+         assign => assign.PermissionId,
+         permission => permission.PermissionId,
+         (assign, permission) => new { PermissionName = permission.PermissionName })
+       .Select(x => x.PermissionName)
+    .ToList();
+
+        return permissionNamesList.Any(permissionName => permissionNames.Contains(permissionName));
+    }
+}
+public class RoleDto
+{
+    public int RoleId { get; set; }
+    public string RoleName { get; set; }
 }
