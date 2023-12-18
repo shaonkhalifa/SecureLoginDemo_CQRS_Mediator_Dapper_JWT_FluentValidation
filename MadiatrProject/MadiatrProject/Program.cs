@@ -9,6 +9,8 @@ using MadiatrProject.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using System.Configuration;
@@ -21,6 +23,7 @@ Microsoft.Extensions.Configuration.ConfigurationManager configuration = builder.
 
 
 builder.Services.AddDbContext<MDBContext>(opt=>opt.UseSqlServer(configuration.GetConnectionString("defaultconnections")));
+//builder.Services.AddSingleton<IConfigureOptions<DbContextOptions<MDBContext>>, DbInitializer>();
 builder.Services.AddControllers();
 
 builder.Services.AddMediatR(cfg => cfg.RegisterServicesFromAssembly(typeof(Program).Assembly));
@@ -29,6 +32,7 @@ builder.Services.Configure<AppSettings>(builder.Configuration.GetSection("AppSet
 builder.Services.AddScoped<AppSettings>();
 builder.Services.AddScoped<AuthorizeAttribute>();
 builder.Services.AddScoped<UserAuthenticationService>();
+builder.Services.AddScoped<PermissionInitializerService>();
 
 //builder.Services.AddScoped<IDbConnection>(c =>
 //{
@@ -98,6 +102,13 @@ builder.Services.AddSwaggerGen(option =>
 
 
 var app = builder.Build();
+
+using (var serviceScope = app.Services.CreateScope())
+{
+    var services = serviceScope.ServiceProvider;
+    services.GetRequiredService<MDBContext>();
+}
+
 
 
 if (app.Environment.IsDevelopment())
