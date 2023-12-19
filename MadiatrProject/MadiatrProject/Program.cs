@@ -23,6 +23,7 @@ Microsoft.Extensions.Configuration.ConfigurationManager configuration = builder.
 
 
 builder.Services.AddDbContext<MDBContext>(opt=>opt.UseSqlServer(configuration.GetConnectionString("defaultconnections")));
+builder.Services.AddDbContext<SDBContext>(opt => opt.UseSqlite(configuration.GetConnectionString("sqliteDbConnections")));
 //builder.Services.AddSingleton<IConfigureOptions<DbContextOptions<MDBContext>>, DbInitializer>();
 builder.Services.AddControllers();
 

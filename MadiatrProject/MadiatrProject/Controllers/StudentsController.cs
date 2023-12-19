@@ -1,6 +1,7 @@
 ﻿using FluentValidation;
 using MadiatrProject.Attributes;
 using MadiatrProject.Command;
+using MadiatrProject.Enums;
 using MadiatrProject.Model;
 using MadiatrProject.Queries;
 using MediatR;
@@ -12,7 +13,8 @@ namespace MadiatrProject.Controllers;
 
 [Route("api/[controller]")]
 [ApiController]
-[Authorize(permission: "StudentGet")]
+//[Authorize(permission:"StudentGet")]
+
 public class StudentsController : ControllerBase
 {
     private readonly IMediator _madiator;
@@ -27,6 +29,7 @@ public class StudentsController : ControllerBase
             _uvalidator = uvalidator;
     }
     [HttpGet]
+    [Authorize(PermissionEnum.StudentGet)]
     public  async Task<IActionResult> GetAllStudents()
     {
         

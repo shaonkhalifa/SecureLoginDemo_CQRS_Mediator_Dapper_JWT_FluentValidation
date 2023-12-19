@@ -33,20 +33,23 @@ public class PasswordResetCommand:IRequest<int>
             {
                 throw new InvalidOperationException("Invalid password.");
             }
-            string hashedPassword = BCrypt.Net.BCrypt.HashPassword(request.Password);
-            var user = new User
+            string hashedPassword = BCrypt.Net.BCrypt.HashPassword(request.NewPassword);
+
+            var user= _dBContext.User.Where(a=>a.UserId == request.UserId).FirstOrDefault();
+            if (user == null)
             {
-                Password = hashedPassword,
-            };
-             _dBContext.User.Update(user);
+                throw new InvalidOperationException("Invalid User.");
+            }
+            user.Password = hashedPassword;
+            _dBContext.User.Update(user);
             result =await _dBContext.SaveChangesAsync();
             return result;
         }
         private bool VerifyPassword(int UserID,string? Password)
         {
             var connection = _dBContext.GetSqlConnection();
-            var data = @"SELECT * FROM User WHERE UserName = @UserID ";
-            var queryResult =  connection.QueryFirstOrDefault<User>(data, new { UserID = UserID });
+            var data = @"SELECT * FROM [User] WHERE UserId = @UserID ";
+            var queryResult =  connection.QueryFirstOrDefault<User>(data, new { UserId = UserID });
 
             if (!BCrypt.Net.BCrypt.Verify(Password, queryResult.Password))
             {
@@ -79,4 +82,8 @@ public class PasswordValidator : AbstractValidator<PasswordResetCommand>
 public class UserDetail
 {
     public string? UserName { get; set; }
+}
+public class UpdatePasswordDto
+{
+    public string? Password { get; set; }
 }

@@ -1,25 +1,28 @@
 ﻿using MadiatrProject.DbContexts;
+using MadiatrProject.Enums;
 using MadiatrProject.Model;
 using MadiatrProject.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.EntityFrameworkCore;
+using System.Linq;
 using System.Security.Claims;
 
 namespace MadiatrProject.Attributes;
 
 [AttributeUsage(AttributeTargets.Class | AttributeTargets.Method, AllowMultiple = true, Inherited = true)]
 public class AuthorizeAttribute : Attribute, IAuthorizationFilter
-{
-    private readonly string[] _requiredPermissions;
+{  private PermissionEnum _requiredPermissions;
+    //private readonly string[] _requiredPermissions;
     //public AuthorizeAttribute(string roles)
     //{
     //    Role = roles;
     //}
-    public AuthorizeAttribute(string permission)
+    public AuthorizeAttribute(PermissionEnum permission)
     {
-        _requiredPermissions = permission.Split(','); ;
+        //_requiredPermissions = permission.Split(','); ;
+        _requiredPermissions = permission;
     }
     private readonly MDBContext _dbContext;
     public AuthorizeAttribute(MDBContext dbContext)
@@ -54,18 +57,21 @@ public class AuthorizeAttribute : Attribute, IAuthorizationFilter
 
   
        var permissionRoles = userService.findUser(userID);
-    
-        bool hasPermission = permissionRoles.RoleName.Any(role => roles.Contains(role.ToString()));
+
+
+        bool hasPermission = permissionRoles.RoleId.ToString().Equals(roles);
 
         if (!hasPermission)
         {
             context.Result = new ForbidResult();
             return;
         }
-        var Per = userService.HasAnyPermission(permissionRoles.RoleId,_requiredPermissions);
+        //var RoleId = permissionRoles.Select(role => role.RoleId).ToList();
+        int permissionID = (int)_requiredPermissions;
+        var Per = userService.HasAnyPermission(permissionRoles.RoleId, permissionID);
         if (!Per)
         {
-            context.Result = new ForbidResult("You Don Have Permission");
+            context.Result = new ForbidResult("You Don't Have Permission");
             return;
         }
 
