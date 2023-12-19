@@ -43,8 +43,8 @@ public class AuthorizeAttribute : Attribute, IAuthorizationFilter
             return;
         }
         UserAuthenticationService? userService =  context.HttpContext.RequestServices.GetService(typeof(UserAuthenticationService)) as UserAuthenticationService;
-        var user = userService.ValidateToken(token);
-        int? userID = user;
+        var response = userService?.ValidateToken(token);
+        int? userID =response?.UserId;
 
         if (userID == null)
         {
@@ -52,24 +52,30 @@ public class AuthorizeAttribute : Attribute, IAuthorizationFilter
             return;
         }
 
-        var roles = context.HttpContext.User.FindAll(ClaimTypes.Role).Select(c => c.Value).FirstOrDefault();
-        
+        // var roles = context.HttpContext.User.FindAll(ClaimTypes.Role).Select(c => c.Value).FirstOrDefault();
+        //var permissionRoles = userService?.findUser(userID);
 
-  
-       var permissionRoles = userService.findUser(userID);
+        int roleId = int.TryParse(context.HttpContext.User.FindAll(ClaimTypes.Role).Select(c => c.Value).FirstOrDefault(), out roleId) ? roleId : throw new FormatException("Role value is not an integer.");
 
+       
 
-        bool hasPermission = permissionRoles.RoleId.ToString().Equals(roles);
-
-        if (!hasPermission)
+        if (response?.RoleId!=roleId)
         {
             context.Result = new ForbidResult();
             return;
         }
         //var RoleId = permissionRoles.Select(role => role.RoleId).ToList();
+        //string[] responsepermission = response?.permission.Split(',');
+        //var Per = userService.HasAnyPermission(permissionRoles.RoleId, permissionID);
+
         int permissionID = (int)_requiredPermissions;
-        var Per = userService.HasAnyPermission(permissionRoles.RoleId, permissionID);
-        if (!Per)
+        
+        List<int> permissionIdList = response.permission
+        .Split(',')
+        .Select(int.Parse)
+        .ToList();
+       
+        if (!permissionIdList.Contains(permissionID))
         {
             context.Result = new ForbidResult("You Don't Have Permission");
             return;

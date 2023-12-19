@@ -49,8 +49,14 @@ public class UserSignInCommand : IRequest<UserCredintial>
             {
                 var sessionId = Guid.NewGuid();
                 var roles = GetRolesForUser(credential.UserId);
+                var permissionIds = await _dbcontext.PermissionAssign
+                   .Where(a => a.RoleId == roles.RoleId)
+                   .Select(a => a.PermissionId)
+                   .ToListAsync();
 
-                var token = GenerateToken(sessionId, credential, roles, _appSettings.key);
+                string joinedPermissionId = string.Join(",", permissionIds);
+
+                var token = GenerateToken(sessionId, credential, roles, joinedPermissionId, _appSettings.key);
                 credential.Token = token;
                 credential.Password = "";
                 //_userAuthService.
@@ -59,11 +65,12 @@ public class UserSignInCommand : IRequest<UserCredintial>
                 //{
                 //    throw new UnauthorizedAccessException("Invalid User");
                 //}
-                string[] permissionIds = _dbcontext.PermissionAssign
-                 .Where(a => a.RoleId == roles.RoleId)
-                 .Select(a => a.PermissionId.ToString())
-                 .ToArray();
-                InsertSessionWiseUserData(sessionId, credential.UserId, credential.Token, roles.RoleId, permissionIds);
+                // Assuming this code is inside an asynchronous method
+               
+
+                // Now 'joinedPermissionId' contains a comma-separated string of permission IDs
+
+                _userAuthService.InsertSessionWiseUserData(sessionId, credential.UserId, credential.Token, roles.RoleId, joinedPermissionId);
                 var userCredintial = new UserCredintial
                 {
                     RoleId = roles.RoleId,
@@ -80,25 +87,7 @@ public class UserSignInCommand : IRequest<UserCredintial>
             throw new UnauthorizedAccessException("Invalid User");
 
         }
-        public async void InsertSessionWiseUserData(Guid SessionId, int userId, string token, int roleId, string[] permissionIds)
-        {
-            
-
-            DateTime loginTime = DateTime.Now;
-            DateTime expireTime = loginTime.AddHours(24);
-            var Session = new SessionTbl
-            {
-                SessionId = SessionId,
-                LogInTime = loginTime,
-                ExpireTime = expireTime,
-                Permission = permissionIds,
-                RoleID = roleId,
-                Token = token,
-                UserID = userId
-            };
-           _sdbContext.SessionTbl.Add(Session);
-           await _sdbContext.SaveChangesAsync();
-        }
+        
 
         public Role GetRolesForUser(int userId)
         {
@@ -117,7 +106,7 @@ public class UserSignInCommand : IRequest<UserCredintial>
                     ).FirstOrDefault();
             return role;
         }
-        private string GenerateToken(Guid sessionId, User user, Role roles, string secret)
+        private string GenerateToken(Guid sessionId, User user, Role roles,string joinedPermissionId, string secret)
         {
             var secretKey = secret;
             if (Encoding.UTF8.GetBytes(secretKey).Length < 32)
@@ -135,7 +124,8 @@ public class UserSignInCommand : IRequest<UserCredintial>
                 {
                      new Claim(ClaimTypes.Name, user.UserId.ToString()),
                      new Claim(ClaimTypes.Role,roles.RoleId.ToString()),
-                     new Claim("SessionId", sessionId.ToString())
+                     new Claim(ClaimTypes.Dns,joinedPermissionId),
+                     new Claim(ClaimTypes.Dsa, sessionId.ToString())
 
                  }),
                 Expires = DateTime.UtcNow.AddHours(24),
@@ -170,5 +160,5 @@ public class SessionDto
     public string? Token { get; set; }
     public int? RoleID { get; set; }
     public int? UserID { get; set; }
-    public string[]? Permission { get; set; }
+    public string Permission { get; set; }
 }

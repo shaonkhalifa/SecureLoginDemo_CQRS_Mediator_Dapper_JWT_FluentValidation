@@ -32,7 +32,7 @@ builder.Services.AddValidatorsFromAssembly(typeof(Program).Assembly);
 builder.Services.Configure<AppSettings>(builder.Configuration.GetSection("AppSettings"));
 builder.Services.AddScoped<AppSettings>();
 builder.Services.AddScoped<AuthorizeAttribute>();
-builder.Services.AddScoped<UserAuthenticationService>();
+builder.Services.AddTransient<UserAuthenticationService>();
 builder.Services.AddScoped<PermissionInitializerService>();
 
 //builder.Services.AddScoped<IDbConnection>(c =>

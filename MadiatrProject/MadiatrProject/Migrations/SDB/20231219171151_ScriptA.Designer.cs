@@ -11,8 +11,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace MadiatrProject.Migrations.SDB
 {
     [DbContext(typeof(SDBContext))]
-    [Migration("20231219115039_First")]
-    partial class First
+    [Migration("20231219171151_ScriptA")]
+    partial class ScriptA
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)

@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace MadiatrProject.Migrations.SDB
 {
     /// <inheritdoc />
-    public partial class First : Migration
+    public partial class ScriptA : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)

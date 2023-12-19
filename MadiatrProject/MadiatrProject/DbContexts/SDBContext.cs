@@ -9,6 +9,7 @@ public class SDBContext:DbContext
     {
         
     }
+    public DbSet<SessionTbl> SessionTbl { get; set; }
     public DbSet<Course> Course {  get; set; }
-    public DbSet<SessionTbl> SessionTbl { get;}
+    
 }
