@@ -45,13 +45,13 @@ public class PasswordResetCommand:IRequest<int>
             result =await _dBContext.SaveChangesAsync();
             return result;
         }
-        private bool VerifyPassword(int UserID,string? Password)
+        private bool VerifyPassword(int userID,string? password)
         {
             var connection = _dBContext.GetSqlConnection();
             var data = @"SELECT * FROM [User] WHERE UserId = @UserID ";
-            var queryResult =  connection.QueryFirstOrDefault<User>(data, new { UserId = UserID });
+            var queryResult =  connection.QueryFirstOrDefault<User>(data, new { UserId = userID });
 
-            if (!BCrypt.Net.BCrypt.Verify(Password, queryResult.Password))
+            if (!BCrypt.Net.BCrypt.Verify(password, queryResult.Password))
             {
                 throw new InvalidOperationException("Invalid password.");
             }

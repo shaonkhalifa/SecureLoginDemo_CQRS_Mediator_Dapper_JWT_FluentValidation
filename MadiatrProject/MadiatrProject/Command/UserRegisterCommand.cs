@@ -99,9 +99,6 @@ public class AuthenticationValidator : AbstractValidator<UserRegisterCommand>
         return (lowercase.IsMatch(password) && uppercase.IsMatch(password) && digit.IsMatch(password) && symbol.IsMatch(password));
     }
 }
-public class UserNameList
-{
-    public string? UserName { get; set; }
-}
+
 
 

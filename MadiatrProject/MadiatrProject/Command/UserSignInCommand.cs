@@ -56,7 +56,7 @@ public class UserSignInCommand : IRequest<UserCredintial>
 
                 string joinedPermissionId = string.Join(",", permissionIds);
 
-                var token = GenerateToken(sessionId, credential, roles, joinedPermissionId, _appSettings.key);
+                var token =_userAuthService.GenerateToken(sessionId, credential.UserId, roles.RoleId, joinedPermissionId, _appSettings.key);
                 credential.Token = token;
                 credential.Password = "";
                 //_userAuthService.
@@ -77,7 +77,7 @@ public class UserSignInCommand : IRequest<UserCredintial>
                     UserId = credential.UserId,
                     UserName = credential.UserName,
                     Token = credential.Token,
-                    RoleName = roles.RoleName,
+                    RoleName = roles.RoleName
                 };
 
                 return userCredintial;
@@ -106,38 +106,7 @@ public class UserSignInCommand : IRequest<UserCredintial>
                     ).FirstOrDefault();
             return role;
         }
-        private string GenerateToken(Guid sessionId, User user, Role roles,string joinedPermissionId, string secret)
-        {
-            var secretKey = secret;
-            if (Encoding.UTF8.GetBytes(secretKey).Length < 32)
-            {
-                throw new InvalidOperationException("Secret key should be at least 256 bits (32 bytes) long.");
-            }
-
-            var authSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(secretKey));
-
-
-
-            var tokenDescriptor = new SecurityTokenDescriptor
-            {
-                Subject = new ClaimsIdentity(new[]
-                {
-                     new Claim(ClaimTypes.Name, user.UserId.ToString()),
-                     new Claim(ClaimTypes.Role,roles.RoleId.ToString()),
-                     new Claim(ClaimTypes.Dns,joinedPermissionId),
-                     new Claim(ClaimTypes.Dsa, sessionId.ToString())
-
-                 }),
-                Expires = DateTime.UtcNow.AddHours(24),
-                SigningCredentials = new SigningCredentials(authSigningKey, SecurityAlgorithms.HmacSha256)
-            };
-
-            var tokenHandler = new JwtSecurityTokenHandler();
-            var token = tokenHandler.CreateToken(tokenDescriptor);
-
-            return tokenHandler.WriteToken(token);
-
-        }
+       
 
     }
 
@@ -151,14 +120,4 @@ public class UserCredintial
     public int RoleId { get; set; }
     public string? RoleName { get; set; }
 
-}
-public class SessionDto
-{
-    public Guid SessionId { get; set; }
-    public DateTime ExpireTime { get; set; }
-    public DateTime LogInTime { get; set; }
-    public string? Token { get; set; }
-    public int? RoleID { get; set; }
-    public int? UserID { get; set; }
-    public string Permission { get; set; }
 }

@@ -33,7 +33,6 @@ builder.Services.Configure<AppSettings>(builder.Configuration.GetSection("AppSet
 builder.Services.AddScoped<AppSettings>();
 builder.Services.AddScoped<AuthorizeAttribute>();
 builder.Services.AddTransient<UserAuthenticationService>();
-builder.Services.AddScoped<PermissionInitializerService>();
 
 //builder.Services.AddScoped<IDbConnection>(c =>
 //{
@@ -67,6 +66,8 @@ builder.Services.AddAuthentication(au =>
         IssuerSigningKey = new SymmetricSecurityKey(key),
         ValidateIssuer = false,
         ValidateAudience = false,
+        ValidateLifetime = false,
+
     };
 });
 

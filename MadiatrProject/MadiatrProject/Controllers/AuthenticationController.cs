@@ -65,5 +65,13 @@ namespace MadiatrProject.Controllers
             return Ok(result);
 
         }
+        [HttpPost("RefressTokenGeneretor")]
+        public async Task<IActionResult> RefressTokenGeneretor(RefreshTokenCommand command)
+        {
+
+            var result = await _madiator.Send(command);
+            return Ok(result);
+
+        }
     }
 }

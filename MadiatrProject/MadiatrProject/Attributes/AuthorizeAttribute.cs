@@ -44,6 +44,11 @@ public class AuthorizeAttribute : Attribute, IAuthorizationFilter
         }
         UserAuthenticationService? userService =  context.HttpContext.RequestServices.GetService(typeof(UserAuthenticationService)) as UserAuthenticationService;
         var response = userService?.ValidateToken(token);
+        if (response is null)
+        {
+            context.Result = new UnauthorizedObjectResult(new{ Message = "Token is Expired" });
+            return;
+        }
         int? userID =response?.UserId;
 
         if (userID == null)

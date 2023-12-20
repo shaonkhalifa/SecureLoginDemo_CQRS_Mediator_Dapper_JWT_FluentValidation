@@ -22,7 +22,7 @@ public class AuthenticUserQuery:IRequest<User>
 
             var connection = _dbContext.GetSqlConnection();
             var hashedPassword = BCrypt.Net.BCrypt.HashPassword(request.Password);
-            var data = "SELECT * FROM [User] WHERE UserName = @UserName ";//AND Password = @Password
+            var data = "SELECT * FROM [User] WHERE UserName = @UserName ";
             var queryResult = await connection.QuerySingleOrDefaultAsync<User>(data, new { UserName = request.UserName });//, Password = hashedPassword
             if (queryResult == null)
             {
