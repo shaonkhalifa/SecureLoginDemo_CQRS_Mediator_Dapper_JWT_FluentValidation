@@ -2,11 +2,14 @@
 using FluentValidation;
 using FluentValidation.AspNetCore;
 using MadiatrProject.Attributes;
+using MadiatrProject.Behaviour;
 using MadiatrProject.Cache;
 using MadiatrProject.Command;
 using MadiatrProject.DbContexts;
+using MadiatrProject.Middlewares;
 using MadiatrProject.Model;
 using MadiatrProject.Services;
+using MediatR;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
@@ -25,6 +28,11 @@ Microsoft.Extensions.Configuration.ConfigurationManager configuration = builder.
 
 builder.Services.AddDbContext<MDBContext>(opt=>opt.UseSqlServer(configuration.GetConnectionString("defaultconnections")));
 builder.Services.AddDbContext<SDBContext>(opt => opt.UseSqlite(configuration.GetConnectionString("sqliteDbConnections")));
+builder.Services.AddStackExchangeRedisCache(options =>
+{
+    string? connection = builder.Configuration.GetConnectionString("Radis");
+    options.Configuration = connection;//"localhost:6379";
+});
 //builder.Services.AddSingleton<IConfigureOptions<DbContextOptions<MDBContext>>, DbInitializer>();
 builder.Services.AddControllers();
 
@@ -36,6 +44,8 @@ builder.Services.AddScoped<AuthorizeAttribute>();
 builder.Services.AddTransient<UserAuthenticationService>();
 builder.Services.AddDistributedMemoryCache();
 builder.Services.AddSingleton<ICacheService, CacheService>();
+builder.Services.AddTransient(typeof(IPipelineBehavior<,>), typeof(ValidationBehaviour<,>));
+
 
 //builder.Services.AddScoped<IDbConnection>(c =>
 //{
@@ -124,6 +134,7 @@ if (app.Environment.IsDevelopment())
 
 app.UseAuthentication();
 app.UseAuthorization();
+app.UseMiddleware<ExecptionHandlingMiddleware>();
 
 app.UseCors(x =>
 {

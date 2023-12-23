@@ -30,30 +30,30 @@ public class GetAllStudentsQuery : IRequest<List<StudentsDto>>
         {
 
 
-            return await _cacheService.GetAsync("Students", async () =>
-                        {
-                            var connection = _dbContext.GetSqlConnection();
-                            var query = await connection.QueryAsync<StudentsDto>("SELECT * FROM Students");
-                            return query.ToList();
-                        }, cancellationToken);
+            //return await _cacheService.GetAsync("Students", async () =>
+            //            {
+            //                var connection = _dbContext.GetSqlConnection();
+            //                var query = await connection.QueryAsync<StudentsDto>("SELECT * FROM Students");
+            //                return query.ToList();
+            //            }, cancellationToken);
 
 
-            //List<StudentsDto>? sdata =await _cacheService.GetAsync<List<StudentsDto>>("Students", cancellationToken);
-            //if (sdata != null)
-            //{
-            //    return sdata;
-            //}
-            //var connection = _dbContext.GetSqlConnection();
+            List<StudentsDto>? sdata = await _cacheService.GetAsync<List<StudentsDto>>("Students", cancellationToken);
+            if (sdata != null)
+            {
+                return sdata;
+            }
+            var connection = _dbContext.GetSqlConnection();
 
-            ////var studentsDto = await _dbConnection.QueryAsync<StudentsDto>("SELECT * FROM Students");
-            ////return studentsDto.ToList();
-            //var data = "SELECT * FROM Students";
-            //var query = await connection.QueryAsync<StudentsDto>(data);
+            //var studentsDto = await _dbConnection.QueryAsync<StudentsDto>("SELECT * FROM Students");
+            //return studentsDto.ToList();
+            var data = "SELECT * FROM Students";
+            var query = await connection.QueryAsync<StudentsDto>(data);
 
-            //sdata=query.ToList();
+            sdata = query.ToList();
 
-            //await _cacheService.SetAsync("Students", sdata, cancellationToken);
-            //return query.ToList();
+            await _cacheService.SetAsync("Students", sdata, cancellationToken);
+            return query.ToList();
 
 
 

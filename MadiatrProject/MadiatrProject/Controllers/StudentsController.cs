@@ -41,17 +41,17 @@ public class StudentsController : ControllerBase
     [HttpPost]
     public async Task<IActionResult> StudetnInsert(StudetnIntCommand command)
     {
-        var validationResult = await _validator.ValidateAsync(command);
+        //var validationResult = await _validator.ValidateAsync(command);
 
-        if (!validationResult.IsValid)
-        {
-            foreach (var error in validationResult.Errors)
-            {
-                Console.WriteLine($"Property: {error.PropertyName}, Error: {error.ErrorMessage}");
-            }
+        //if (!validationResult.IsValid)
+        //{
+        //    foreach (var error in validationResult.Errors)
+        //    {
+        //        Console.WriteLine($"Property: {error.PropertyName}, Error: {error.ErrorMessage}");
+        //    }
 
-            return BadRequest(validationResult.Errors);
-        }
+        //    return BadRequest(validationResult.Errors);
+        //}
 
         var result = await _madiator.Send(command);
         return Ok(result);

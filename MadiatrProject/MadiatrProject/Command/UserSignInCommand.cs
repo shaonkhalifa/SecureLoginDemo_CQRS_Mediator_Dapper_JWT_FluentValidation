@@ -77,7 +77,9 @@ public class UserSignInCommand : IRequest<UserCredintial>
                     UserId = credential.UserId,
                     UserName = credential.UserName,
                     Token = credential.Token,
-                    RoleName = roles.RoleName
+                    RoleName = roles.RoleName,
+                    RefereshToken=sessionId.ToString()
+                    
                 };
 
                 return userCredintial;
@@ -119,5 +121,6 @@ public class UserCredintial
     public string? Token { get; set; }
     public int RoleId { get; set; }
     public string? RoleName { get; set; }
+    public string? RefereshToken { get; set;}
 
 }

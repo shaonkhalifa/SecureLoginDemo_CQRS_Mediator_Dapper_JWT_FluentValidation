@@ -82,6 +82,8 @@ public class UserAuthenticationService
         return tokenHandler.WriteToken(token);
 
     }
+
+ 
     public ClaimResponseDto ValidateToken(string token)
     {
         if (token == null)
@@ -309,6 +311,7 @@ public class ClaimResponseDto
     public int UserId { get; set; }
     public string? permission { get; set; }
     public string? sessionId { get; set; }
+
 
 }
 

@@ -7,6 +7,8 @@ using System.ComponentModel.DataAnnotations;
 using System.Data;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Http.HttpResults;
+using MadiatrProject.Cache;
+using MadiatrProject.Queries;
 
 namespace MadiatrProject.Command;
 
@@ -23,16 +25,23 @@ public class StudetnIntCommand:IRequest<int>
     {
 
         private readonly MDBContext _cotext;
-       
-        public StudetnInsertCommandHandler(MDBContext context)
+        private readonly ICacheService _cacheService;
+
+        public StudetnInsertCommandHandler(MDBContext context, ICacheService cacheService)
         {
             _cotext = context;
-            
+            _cacheService = cacheService;
         }
 
 
         public async Task<int> Handle(StudetnIntCommand request, CancellationToken cancellationToken)
         {
+            string key = "Students";
+            List<StudentsDto>? sdata = await _cacheService.GetAsync<List<StudentsDto>>(key, cancellationToken);
+            if (sdata != null)
+            {
+               await _cacheService.RemoveAsync(key, cancellationToken);
+            }
             var connection = _cotext.GetSqlConnection();
 
             var query = "Insert into Students (StudentName,StudentEmail,FatherName,MotherName,RollNo) Values(@StudentName,@StudentEmail,@FatherName,@MotherName,@RollNo)";

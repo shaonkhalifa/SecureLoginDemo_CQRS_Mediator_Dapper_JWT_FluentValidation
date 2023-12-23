@@ -1,23 +1,23 @@
 {
   "format": 1,
   "restore": {
-    "C:\\Users\\mdsha\\OneDrive\\Desktop\\Project\\SecureLoginDemo_CQRS_Mediator_Dapper_JWT_FluentValidation\\MadiatrProject\\MadiatrProject\\MadiatrProject.csproj": {}
+    "C:\\Users\\Hi\\Desktop\\Practice\\SecureLoginDemo_CQRS_Mediator_Dapper_JWT_FluentValidation\\MadiatrProject\\MadiatrProject\\MadiatrProject.csproj": {}
   },
   "projects": {
-    "C:\\Users\\mdsha\\OneDrive\\Desktop\\Project\\SecureLoginDemo_CQRS_Mediator_Dapper_JWT_FluentValidation\\MadiatrProject\\MadiatrProject\\MadiatrProject.csproj": {
+    "C:\\Users\\Hi\\Desktop\\Practice\\SecureLoginDemo_CQRS_Mediator_Dapper_JWT_FluentValidation\\MadiatrProject\\MadiatrProject\\MadiatrProject.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\mdsha\\OneDrive\\Desktop\\Project\\SecureLoginDemo_CQRS_Mediator_Dapper_JWT_FluentValidation\\MadiatrProject\\MadiatrProject\\MadiatrProject.csproj",
+        "projectUniqueName": "C:\\Users\\Hi\\Desktop\\Practice\\SecureLoginDemo_CQRS_Mediator_Dapper_JWT_FluentValidation\\MadiatrProject\\MadiatrProject\\MadiatrProject.csproj",
         "projectName": "MadiatrProject",
-        "projectPath": "C:\\Users\\mdsha\\OneDrive\\Desktop\\Project\\SecureLoginDemo_CQRS_Mediator_Dapper_JWT_FluentValidation\\MadiatrProject\\MadiatrProject\\MadiatrProject.csproj",
-        "packagesPath": "C:\\Users\\mdsha\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\mdsha\\OneDrive\\Desktop\\Project\\SecureLoginDemo_CQRS_Mediator_Dapper_JWT_FluentValidation\\MadiatrProject\\MadiatrProject\\obj\\",
+        "projectPath": "C:\\Users\\Hi\\Desktop\\Practice\\SecureLoginDemo_CQRS_Mediator_Dapper_JWT_FluentValidation\\MadiatrProject\\MadiatrProject\\MadiatrProject.csproj",
+        "packagesPath": "C:\\Users\\Hi\\.nuget\\packages\\",
+        "outputPath": "C:\\Users\\Hi\\Desktop\\Practice\\SecureLoginDemo_CQRS_Mediator_Dapper_JWT_FluentValidation\\MadiatrProject\\MadiatrProject\\obj\\",
         "projectStyle": "PackageReference",
         "fallbackFolders": [
           "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
         ],
         "configFilePaths": [
-          "C:\\Users\\mdsha\\AppData\\Roaming\\NuGet\\NuGet.Config",
+          "C:\\Users\\Hi\\AppData\\Roaming\\NuGet\\NuGet.Config",
           "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.FallbackLocation.config",
           "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
         ],
@@ -39,9 +39,6 @@
           "warnAsError": [
             "NU1605"
           ]
-        },
-        "restoreAuditProperties": {
-          "enableAudit": "default"
         }
       },
       "frameworks": {
@@ -83,6 +80,10 @@
             "Microsoft.EntityFrameworkCore.Tools": {
               "include": "Runtime, Build, Native, ContentFiles, Analyzers, BuildTransitive",
               "suppressParent": "All",
+              "target": "Package",
+              "version": "[8.0.0, )"
+            },
+            "Microsoft.Extensions.Caching.StackExchangeRedis": {
               "target": "Package",
               "version": "[8.0.0, )"
             },
