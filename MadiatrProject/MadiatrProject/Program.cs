@@ -2,6 +2,7 @@
 using FluentValidation;
 using FluentValidation.AspNetCore;
 using MadiatrProject.Attributes;
+using MadiatrProject.Cache;
 using MadiatrProject.Command;
 using MadiatrProject.DbContexts;
 using MadiatrProject.Model;
@@ -33,6 +34,8 @@ builder.Services.Configure<AppSettings>(builder.Configuration.GetSection("AppSet
 builder.Services.AddScoped<AppSettings>();
 builder.Services.AddScoped<AuthorizeAttribute>();
 builder.Services.AddTransient<UserAuthenticationService>();
+builder.Services.AddDistributedMemoryCache();
+builder.Services.AddSingleton<ICacheService, CacheService>();
 
 //builder.Services.AddScoped<IDbConnection>(c =>
 //{
