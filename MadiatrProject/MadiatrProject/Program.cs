@@ -6,6 +6,7 @@ using MadiatrProject.Behaviour;
 using MadiatrProject.Cache;
 using MadiatrProject.Command;
 using MadiatrProject.DbContexts;
+using MadiatrProject.Fillter;
 using MadiatrProject.Middlewares;
 using MadiatrProject.Model;
 using MadiatrProject.Services;
@@ -44,7 +45,9 @@ builder.Services.AddScoped<AuthorizeAttribute>();
 builder.Services.AddTransient<UserAuthenticationService>();
 builder.Services.AddDistributedMemoryCache();
 builder.Services.AddSingleton<ICacheService, CacheService>();
+builder.Services.AddHttpContextAccessor();
 builder.Services.AddTransient(typeof(IPipelineBehavior<,>), typeof(ValidationBehaviour<,>));
+builder.Services.AddTransient(typeof(IPipelineBehavior <,>), typeof(ErrorCodeMappingExceptionFilter<,>));
 
 
 //builder.Services.AddScoped<IDbConnection>(c =>
@@ -53,14 +56,14 @@ builder.Services.AddTransient(typeof(IPipelineBehavior<,>), typeof(ValidationBeh
 //    return dbContext.GetSqlConnection();
 //});
 //builder.Services.AddControllers()
-//       .AddNewtonsoftJson(option =>
+//       .AddJsonOptions(option =>
 //       {
-//           option.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Serialize;
-//           option.SerializerSettings.PreserveReferencesHandling = Newtonsoft.Json.PreserveReferencesHandling.Objects;
-////       });
+//       option.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Serialize;
+//       option.SerializerSettings.PreserveReferencesHandling = Newtonsoft.Json.PreserveReferencesHandling.Objects;
+//       //       });
 
 
-var appSettingsSection = configuration.GetSection("AppSettings");
+       var appSettingsSection = configuration.GetSection("AppSettings");
 
 //jwt
 var appSettings = appSettingsSection.Get<AppSettings>();
@@ -134,7 +137,7 @@ if (app.Environment.IsDevelopment())
 
 app.UseAuthentication();
 app.UseAuthorization();
-app.UseMiddleware<ExecptionHandlingMiddleware>();
+//app.UseMiddleware<ExecptionHandlingMiddleware>();
 
 app.UseCors(x =>
 {

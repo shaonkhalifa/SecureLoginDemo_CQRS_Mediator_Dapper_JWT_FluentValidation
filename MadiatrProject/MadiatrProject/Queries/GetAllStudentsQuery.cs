@@ -4,16 +4,19 @@ using MadiatrProject.DbContexts;
 using MadiatrProject.Model;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
+using System.Collections.Generic;
 using System.Data;
+using System.Data.Common;
 using System.Data.SqlClient;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace MadiatrProject.Queries;
 
-public class GetAllStudentsQuery : IRequest<List<StudentsDto>>
+public class GetAllStudentsQuery : IRequest<ApiResponse>
 {
 
 
-    private class GetAllStudentsQueryHandler : IRequestHandler<GetAllStudentsQuery, List<StudentsDto>>
+    private class GetAllStudentsQueryHandler : IRequestHandler<GetAllStudentsQuery, ApiResponse>
     {
         private readonly MDBContext _dbContext;
         private readonly ICacheService _cacheService;
@@ -26,34 +29,60 @@ public class GetAllStudentsQuery : IRequest<List<StudentsDto>>
             _dbContext = dbContext;
             _cacheService = cacheService;
         }
-        public async Task<List<StudentsDto>> Handle(GetAllStudentsQuery request, CancellationToken cancellationToken)
+        public async Task<ApiResponse<List<StudentsDto>>> Handle(GetAllStudentsQuery request, CancellationToken cancellationToken)
         {
-
-
-            //return await _cacheService.GetAsync("Students", async () =>
-            //            {
-            //                var connection = _dbContext.GetSqlConnection();
-            //                var query = await connection.QueryAsync<StudentsDto>("SELECT * FROM Students");
-            //                return query.ToList();
-            //            }, cancellationToken);
-
-
-            List<StudentsDto>? sdata = await _cacheService.GetAsync<List<StudentsDto>>("Students", cancellationToken);
-            if (sdata != null)
+            try
             {
-                return sdata;
+                var data = await _cacheService.GetAsync("Students", async () =>
+                {
+                    try
+                    {
+                        var connection = _dbContext.GetSqlConnection();
+                        var query = await connection.QueryAsync<StudentsDto>("SELECT * FROM Students");
+                        var data1 = query.ToList();
+                        return new ApiResponse<List<StudentsDto>> { IsSuccess = true, Message = "Request is Successful", Data = data1 };
+
+                    }
+                    catch (DbException ex)
+                    {
+
+                        return new ApiResponse<List<StudentsDto>> { IsSuccess = false, Message = "Request is UnSuccessful" + ex.Message };
+                    }
+                   
+                }, cancellationToken);
+                return new ApiResponse<List<StudentsDto>> { IsSuccess=true,Message="Request is Successful", Data = data };
+
             }
-            var connection = _dbContext.GetSqlConnection();
+            catch (Exception ex)
+            {
 
-            //var studentsDto = await _dbConnection.QueryAsync<StudentsDto>("SELECT * FROM Students");
-            //return studentsDto.ToList();
-            var data = "SELECT * FROM Students";
-            var query = await connection.QueryAsync<StudentsDto>(data);
+                return new ApiResponse <List<StudentsDto>>
+                {
+                    IsSuccess = false,
+                    Code=500,
+                    Message= ex.Message,
 
-            sdata = query.ToList();
+                };
+            }
 
-            await _cacheService.SetAsync("Students", sdata, cancellationToken);
-            return query.ToList();
+
+
+            //List<StudentsDto>? sdata = await _cacheService.GetAsync<List<StudentsDto>>("Students", cancellationToken);
+            //if (sdata != null)
+            //{
+            //    return sdata;
+            //}
+            //var connection = _dbContext.GetSqlConnection();
+
+            ////var studentsDto = await _dbConnection.QueryAsync<StudentsDto>("SELECT * FROM Students");
+            ////return studentsDto.ToList();
+            //var data = "SELECT * FROM Students";
+            //var query = await connection.QueryAsync<StudentsDto>(data);
+
+            //sdata = query.ToList();
+
+            //await _cacheService.SetAsync("Students", sdata, cancellationToken);
+            //return query.ToList();
 
 
 

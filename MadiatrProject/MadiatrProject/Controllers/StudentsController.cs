@@ -30,12 +30,12 @@ public class StudentsController : ControllerBase
     }
     [HttpGet]
     [Authorize(PermissionEnum.StudentGet)]
-    public  async Task<IActionResult> GetAllStudents()
+    public  async Task<ApiResponse<List<StudentsDto>>> GetAllStudents()
     {
         
         var query = new GetAllStudentsQuery();
         var result =  await _madiator.Send(query); 
-        return Ok(result);
+        return result;
     }
 
     [HttpPost]
@@ -54,6 +54,7 @@ public class StudentsController : ControllerBase
         //}
 
         var result = await _madiator.Send(command);
+      
         return Ok(result);
 
     }
